@@ -8,9 +8,13 @@ GREEN = (50, 255, 50)
 RED = (255, 50, 50)
 YELLOW = (255, 255, 50)
 
+TEXT_COLOR = BLACK
+SCREEN_COLOR = WHITE
+
 pygame.font.init()
-mmt_menu_font = pygame.font.SysFont('Comic Sans MS', 30)
-mmt_question_font = pygame.font.SysFont('Comic Sans MS', 90)
+mmt_menu_font = pygame.font.SysFont('Verdana', 30)
+mmt_question_font = pygame.font.SysFont('Verdana', 90)
+mmt_highlight_font = pygame.font.SysFont('Verdana', 250)
 
 clock = pygame.time.Clock()
 
@@ -26,6 +30,18 @@ def create_multiplication_matrix():
 
     #for i in mmt:
     #    print(i)
+
+
+def highlight_result(res, correct):
+    if correct:
+        screen.fill(GREEN)
+    else:
+        screen.fill(RED)
+    highlight_surface = mmt_highlight_font.render(str(res), False, TEXT_COLOR)
+    screen.blit(highlight_surface, (300, 100))
+
+    pygame.display.flip()
+    pygame.time.wait(2000)
 
 
 pygame.init()
@@ -70,10 +86,12 @@ while True:
                     if a * b == int(answer):
                         # answer is correct
                         good_answers += 1
+                        highlight_result(a * b, True)
                     else:
                         # answer is wrong
                         bad_answers += 1
                         mmt.append((a, b))
+                        highlight_result(a * b, False)
                     answer = ''
                     mmt_index += 1
                     if mmt_index == len(mmt):
@@ -84,22 +102,22 @@ while True:
 
                     round_tick_start = pygame.time.get_ticks()
 
-    screen.fill(BLACK)
+    screen.fill(SCREEN_COLOR)
 
     if mode == 1:
         # display menu
-        menu_surface = mmt_menu_font.render('Hit Q for exit, Space to start', False, WHITE)
+        menu_surface = mmt_menu_font.render('Hit Q for exit, Space to start', False, TEXT_COLOR)
         screen.blit(menu_surface, (200, 200))
     elif mode == 2:
         # play the game
         a, b = mmt[mmt_index]
         round_tick = pygame.time.get_ticks() - round_tick_start
-        question_surface = mmt_question_font.render(str(a)+' x '+str(b), False, WHITE)
-        answer_surface = mmt_question_font.render(answer, False, WHITE)
+        question_surface = mmt_question_font.render(str(a) +' x ' + str(b), False, TEXT_COLOR)
+        answer_surface = mmt_question_font.render(answer, False, TEXT_COLOR)
         good_answer_surface = mmt_question_font.render(str(good_answers), False, GREEN)
         bad_answer_surface = mmt_question_font.render(str(bad_answers), False, RED)
-        timer_surface = mmt_menu_font.render(str(int(pygame.time.get_ticks()/1000)), False, WHITE)
-        round_timer_surface = mmt_menu_font.render(str(round_tick/1000), False, WHITE)
+        timer_surface = mmt_menu_font.render(str(int(pygame.time.get_ticks()/1000)), False, TEXT_COLOR)
+        round_timer_surface = mmt_menu_font.render(str(round_tick/1000), False, TEXT_COLOR)
         screen.blit(question_surface, (300, 150))
         screen.blit(answer_surface, (300, 350))
         screen.blit(good_answer_surface, (100, 50))
@@ -107,17 +125,18 @@ while True:
         screen.blit(timer_surface, (50, 550))
         screen.blit(round_timer_surface, (650, 550))
 
-        color = GREEN
-        if round_tick > 4000:
-            color = RED
-        elif round_tick > 2500:
-            color = YELLOW
-
-        pygame.draw.rect(screen, color, (100, 550, int(round_tick/10), 50))
+        #color = GREEN
+        #if round_tick > 4000:
+        #    color = RED
+        #elif round_tick > 2500:
+        #    color = YELLOW
+        color = (int(round_tick/20), 255-int(round_tick/20), 0)
+        pygame.draw.rect(screen, color, (100+ int(round_tick/10), 550, 500-int(round_tick/10), 50))
 
         if round_tick_start <= pygame.time.get_ticks() - 5000:
 
             mmt.append((a, b))
+            highlight_result(a * b, False)
             answer = ''
             mmt_index += 1
             bad_answers += 1
@@ -128,7 +147,7 @@ while True:
 
     elif mode == 3:
         # display result
-        result_surface = mmt_menu_font.render(result, False, WHITE)
+        result_surface = mmt_menu_font.render(result, False, TEXT_COLOR)
         screen.blit(result_surface, (10, 200))
 
     pygame.display.flip()
