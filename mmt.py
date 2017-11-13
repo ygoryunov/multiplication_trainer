@@ -71,11 +71,11 @@ def validate(a, b, o, ga, ba):
         else:
             # answer is wrong
             ba += 1
-            mmt.append((a, b))
+            mmt.append((a, b, o))
             highlight_result(r, False)
     else:
         ba += 1
-        mmt.append((a, b))
+        mmt.append((a, b, o))
         highlight_result(r, False)
 
     return ba, ga
