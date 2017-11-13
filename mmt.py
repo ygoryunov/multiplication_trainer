@@ -35,12 +35,15 @@ def create_multiplication_matrix():
 def highlight_result(res, correct):
     if correct:
         screen.fill(GREEN)
+        pygame.mixer.music.load('correct.mp3')
     else:
         screen.fill(RED)
+        pygame.mixer.music.load('error.mp3')
     highlight_surface = mmt_highlight_font.render(str(res), False, TEXT_COLOR)
     screen.blit(highlight_surface, (300, 100))
 
     pygame.display.flip()
+    pygame.mixer.music.play(0)
     pygame.time.wait(2000)
     pygame.event.get()
 
