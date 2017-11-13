@@ -25,11 +25,9 @@ def create_multiplication_matrix():
     mmt.clear()
     for i in range(2, 10):
         for j in range(2, 10):
-            mmt.append((i, j))
+            mmt.append((i, j, 0))
+            mmt.append((i, j, 1))
     random.shuffle(mmt)
-
-    #for i in mmt:
-    #    print(i)
 
 
 def highlight_result(res, correct):
@@ -63,21 +61,22 @@ round_tick_start = 0
 result = ''
 
 
-def validate(a, b, ga, ba):
+def validate(a, b, o, ga, ba):
+    r = a * b if o == 0 else b
     if len(answer)> 0:
-        if a * b == int(answer):
+        if r == int(answer):
             # answer is correct
             ga += 1
-            highlight_result(a * b, True)
+            highlight_result(r, True)
         else:
             # answer is wrong
             ba += 1
             mmt.append((a, b))
-            highlight_result(a * b, False)
+            highlight_result(r, False)
     else:
         ba += 1
         mmt.append((a, b))
-        highlight_result(a * b, False)
+        highlight_result(r, False)
 
     return ba, ga
 
@@ -107,8 +106,8 @@ while True:
                 elif event.key == pygame.K_BACKSPACE:
                     answer = answer[:-1]
                 elif (event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER) and len(answer) > 0:
-                    a, b = mmt[mmt_index]
-                    bad_answers, good_answers = validate(a, b, good_answers, bad_answers)
+                    a, b, o = mmt[mmt_index]
+                    bad_answers, good_answers = validate(a, b, o, good_answers, bad_answers)
                     answer = ''
                     mmt_index += 1
                     if mmt_index == len(mmt):
@@ -127,9 +126,10 @@ while True:
         screen.blit(menu_surface, (200, 200))
     elif mode == 2:
         # play the game
-        a, b = mmt[mmt_index]
+        a, b, o = mmt[mmt_index]
         round_tick = pygame.time.get_ticks() - round_tick_start
-        question_surface = mmt_question_font.render(str(a) +' x ' + str(b), False, TEXT_COLOR)
+        q_text = (str(a) +' x ' + str(b)) if o == 0 else str(a * b) + ' / ' + str(a)
+        question_surface = mmt_question_font.render(q_text, False, TEXT_COLOR)
         answer_surface = mmt_question_font.render(answer, False, TEXT_COLOR)
         good_answer_surface = mmt_question_font.render(str(good_answers), False, GREEN)
         bad_answer_surface = mmt_question_font.render(str(bad_answers), False, RED)
@@ -147,7 +147,7 @@ while True:
 
         if round_tick_start <= pygame.time.get_ticks() - 5000:
 
-            bad_answers, good_answers = validate(a, b, good_answers, bad_answers)
+            bad_answers, good_answers = validate(a, b, o, good_answers, bad_answers)
 
             answer = ''
             mmt_index += 1
