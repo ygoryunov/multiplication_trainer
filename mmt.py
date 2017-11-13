@@ -58,6 +58,27 @@ bad_answers = 0
 tick_start = 0
 round_tick_start = 0
 result = ''
+
+
+def validate(a, b, ga, ba):
+    if len(answer)> 0:
+        if a * b == int(answer):
+            # answer is correct
+            ga += 1
+            highlight_result(a * b, True)
+        else:
+            # answer is wrong
+            ba += 1
+            mmt.append((a, b))
+            highlight_result(a * b, False)
+    else:
+        ba += 1
+        mmt.append((a, b))
+        highlight_result(a * b, False)
+
+    return ba, ga
+
+
 while True:
     clock.tick(50)
 
@@ -84,15 +105,7 @@ while True:
                     answer = answer[:-1]
                 elif (event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER) and len(answer) > 0:
                     a, b = mmt[mmt_index]
-                    if a * b == int(answer):
-                        # answer is correct
-                        good_answers += 1
-                        highlight_result(a * b, True)
-                    else:
-                        # answer is wrong
-                        bad_answers += 1
-                        mmt.append((a, b))
-                        highlight_result(a * b, False)
+                    bad_answers, good_answers = validate(a, b, good_answers, bad_answers)
                     answer = ''
                     mmt_index += 1
                     if mmt_index == len(mmt):
@@ -120,27 +133,21 @@ while True:
         timer_surface = mmt_menu_font.render(str(int(pygame.time.get_ticks()/1000)), False, TEXT_COLOR)
         round_timer_surface = mmt_menu_font.render(str(round_tick/1000), False, TEXT_COLOR)
         screen.blit(question_surface, (300, 150))
-        screen.blit(answer_surface, (300, 350))
+        screen.blit(answer_surface, (365, 350))
         screen.blit(good_answer_surface, (100, 50))
         screen.blit(bad_answer_surface, (650, 50))
         screen.blit(timer_surface, (50, 550))
         screen.blit(round_timer_surface, (650, 550))
 
-        #color = GREEN
-        #if round_tick > 4000:
-        #    color = RED
-        #elif round_tick > 2500:
-        #    color = YELLOW
         color = (int(round_tick/20), 255-int(round_tick/20), 0)
         pygame.draw.rect(screen, color, (100+ int(round_tick/10), 550, 500-int(round_tick/10), 50))
 
         if round_tick_start <= pygame.time.get_ticks() - 5000:
 
-            mmt.append((a, b))
-            highlight_result(a * b, False)
+            bad_answers, good_answers = validate(a, b, good_answers, bad_answers)
+
             answer = ''
             mmt_index += 1
-            bad_answers += 1
             round_tick_start = pygame.time.get_ticks()
             if mmt_index == len(mmt):
                 # end of matrix - display result
