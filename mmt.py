@@ -42,6 +42,7 @@ def highlight_result(res, correct):
 
     pygame.display.flip()
     pygame.time.wait(2000)
+    pygame.event.get()
 
 
 pygame.init()
@@ -77,11 +78,11 @@ while True:
                 round_tick_start = pygame.time.get_ticks()
                 mode = 2
             if mode == 2:
-                if event.key in range(pygame.K_0, pygame.K_9 + 1):
+                if event.key in range(pygame.K_0, pygame.K_9 + 1) or event.key in range(pygame.K_KP0, pygame.K_KP9 + 1):
                     answer += event.unicode
                 elif event.key == pygame.K_BACKSPACE:
                     answer = answer[:-1]
-                elif event.key == pygame.K_RETURN and len(answer) > 0:
+                elif (event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER) and len(answer) > 0:
                     a, b = mmt[mmt_index]
                     if a * b == int(answer):
                         # answer is correct
